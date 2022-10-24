@@ -10,7 +10,7 @@ return [
     'db_name' => 'db1',
     'db_host' => 'localhost',
     'db_port' => '5432',
-    'db_user' => 'admin',
-    'db_pass' => 'amid525625',
+    'db_user' => 'login',
+    'db_pass' => 'pass',
 ];
 
