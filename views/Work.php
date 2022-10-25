@@ -13,7 +13,7 @@ if(!defined('SITE_KEY'))
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестовое задание | Логин</title>
+    <title>Тестовое задание | Рабочее пространство</title>
     <link href="../css/style.css" rel="stylesheet">
 
 </head>
