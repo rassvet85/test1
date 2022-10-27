@@ -14,7 +14,7 @@ if (isset($_SERVER['REQUEST_URI']) && !in_array($_SERVER['REQUEST_URI'], ['/','/
 //Подключаем конфигурационный файл
 $config = include './Config.php';
 
-//подключаем БД
+//подключаем вспомогательный класс Helper
 include './Helper.php';
 $helper = new Helper($config);
 //Проверяем БД на подключение

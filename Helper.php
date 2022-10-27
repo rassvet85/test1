@@ -89,20 +89,20 @@ class Helper
     {
         $xml = simplexml_load_file($filePath);
         if (!$xml) return [false, 'Данные в файле имеют неверную структуру XML'];
-        $i = 1;
+        $increment = 1;
         $finalTablePet = array();
         $finalTableUser = array();
         //Считываем данные из XML файла
         foreach ($xml as $user) {
-            if (empty($user->attributes()->Name)) return [false, 'Ошибка парсера в'.($i == 2?'о':' ').$i.' элементе User файла XML. Отсутствует имя участника, либо ошибка в XML файле в параметре "User Name'];
-            if (mb_strlen($user->attributes()->Name) > 255) return [false, 'Ошибка парсера в'.($i == 2?'о':' ').$i.' элементе User файла XML. Отсутствует имя участника, либо ошибка в XML файле в параметре "User Name'];
-            $finalTableUser[] = ['id' => $i, 'username' => (string)$user->attributes()->Name];
+            if (empty($user->attributes()->Name)) return [false, 'Ошибка парсера в'.($increment == 2?'о':' ').$increment.' элементе User файла XML. Отсутствует имя участника, либо ошибка в XML файле в параметре "User Name'];
+            if (mb_strlen($user->attributes()->Name) > 255) return [false, 'Ошибка парсера в'.($increment == 2?'о':' ').$increment.' элементе User файла XML. Отсутствует имя участника, либо ошибка в XML файле в параметре "User Name'];
+            $finalTableUser[] = ['id' => $increment, 'username' => (string)$user->attributes()->Name];
             //Проверяем наличие поля Pets
             if (isset($user->Pets)) {
                 foreach ($user->Pets->children() as $pet) {
                     $table = $this->createArray();
                     if (isset($pet->attributes()->Code)) $table['pet_code'] = (string)$pet->attributes()->Code;
-                    $table['id_people'] = $i;
+                    $table['id_people'] = $increment;
                     if (isset($pet->attributes()->Type)) $table['pet_type'] = (string)$pet->attributes()->Type;
                     if (isset($pet->attributes()->Gender)) $table['pet_gender'] = (string)$pet->attributes()->Gender;
                     if (isset($pet->attributes()->Age) && is_numeric((string)$pet->attributes()->Age)) $table['pet_age'] = (float)$pet->attributes()->Age;
@@ -124,14 +124,14 @@ class Helper
                     }
                     $verify = $this->verifyArray($table);
                     //Проверяем данные, полученные с парсера. Проверяются только Имя участника, код питомца, тип питомца, возраст питомца и кличка питомца. Если есть проблема - возвращаем сразу ошибку. Остальные параметры могут быть NULL.
-                    if (!$verify[0]) return [false, 'Ошибка парсера в'.($i == 2?'о':' ').$i.' элементе User файла XML. '.$verify[1]];
+                    if (!$verify[0]) return [false, 'Ошибка парсера в'.($increment == 2?'о':' ').$increment.' элементе User файла XML. '.$verify[1]];
                     $finalTablePet[] = $table;
                 }
             }
-            $i++;
+            $increment++;
         }
         //Если есть наличие верифицированных записей - отправляем их в БД, если нет - возвращаем ошибку.
-        if ($i > 1) {
+        if ($increment > 1) {
             $result = pg_query($this->dbconn, "DELETE FROM people");
             if (!$result) return [false, 'Ошибка удаления данных в таблице "people"'];
             $result = pg_query($this->dbconn, "DELETE FROM pets");
