@@ -26,6 +26,7 @@ class Helper
     {
         if(empty($email)) return [false, 'Не введён Email'];
         if(empty($password)) return [false, 'Не введён пароль'];
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return [false, 'Email имеет неверный формат'];
         $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".$email."'");
         if (!$result || pg_num_rows($result) == 0) return [false, 'Пользователь с такими Email не зарегистрирован'];
         if ($onlyMail) return [true];
