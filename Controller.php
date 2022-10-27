@@ -43,7 +43,7 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
                     $_SESSION['email'] = $result[1];
                     $_SESSION['work'] = true;
                     //Если поставлена галочка на "Запомнить на 10 дней" - устанавливаем куки
-                    if ($_POST['memory']) {
+                    if (isset($_POST['memory']) && $_POST['memory']) {
                         // Генерируем случайные данные и шифруем их
                         $hash = md5($helper->generateCode(10));
                         //Обновляем хэш в таблице users
@@ -60,11 +60,7 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
         case 'do_logout':
             //Очищаем все параметры, связанные с авторизацией.
             if ($_SESSION['work']) $_SESSION['work'] = false;
-            unset($_SESSION['email']);
-            unset($_COOKIE['hash']);
-            unset($_COOKIE['id']);
-            setcookie('id', null, -1, '/');
-            setcookie('hash', null, -1, '/');
+            $helper->deleteSessionCooKs();
             header('Location: /');
             exit();
         //Обработка регистрации
@@ -98,11 +94,7 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
                     $helper->flash('Пароль успешно изменён. Пожалуйста авторизуйтесь повторно.', true);
                     //Очищаем все параметры, связанные с авторизацией.
                     $_SESSION['work'] = false;
-                    unset($_SESSION['email']);
-                    unset($_COOKIE['hash']);
-                    unset($_COOKIE['id']);
-                    setcookie('id', null, -1, '/');
-                    setcookie('hash', null, -1, '/');
+                    $helper->deleteSessionCooKs();
                     header('Location: /');
                     exit();
                 } else {

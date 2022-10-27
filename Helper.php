@@ -26,6 +26,7 @@ class Helper
     {
         if(empty($email)) return [false, 'Не введён Email'];
         if(empty($password)) return [false, 'Не введён пароль'];
+        //Проверяем на SQL инъекцию
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return [false, 'Email имеет неверный формат'];
         $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".$email."'");
         if (!$result || pg_num_rows($result) == 0) return [false, 'Пользователь с такими Email не зарегистрирован'];
@@ -185,6 +186,15 @@ class Helper
             $code .= $chars[mt_rand(0,$clen)];
         }
         return $code;
+    }
+    // Функция очистки сессии и куков
+    public function deleteSessionCooKs() : void
+    {
+        unset($_SESSION['email']);
+        unset($_COOKIE['hash']);
+        unset($_COOKIE['id']);
+        setcookie('id', null, -1, '/');
+        setcookie('hash', null, -1, '/');
     }
     // Функция создания ассоциированного массива
     private function createArray(): array
