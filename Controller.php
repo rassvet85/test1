@@ -81,8 +81,10 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
                         $helper->flash($result[1]);
                         header('Location: /?mode=reg');
                     }
+                    exit();
                 }
-            } else header('Location: /');
+            }
+            header('Location: /');
             exit();
         //Форма регистрации
         case 'reg':
@@ -95,10 +97,9 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
         //Обработка изменения пароля
         case 'do_change_password':
             if ($_SESSION['work']) {
-                if (empty($_POST['email'])) $helper->flash('Не введён Email');
-                elseif (empty($_POST['password_old'])) $helper->flash('Не введён старый пароль');
+                if (empty($_POST['password_old'])) $helper->flash('Не введён старый пароль');
                 elseif (empty($_POST['password'])) $helper->flash('Не введён новый пароль');
-                elseif (empty($_POST['password_2'])) $helper->flash('Не введён пароль подтверждения');
+                elseif (empty($_POST['password_2'])) $helper->flash('Не введён пароль подтверждения нового пароля');
                 else {
                     //Изменяем пароль пользователя
                     $result = $helper->changePassword($_SESSION['email'], $_POST['password_old'], $_POST['password'], $_POST['password_2']);
@@ -108,13 +109,14 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
                         $_SESSION['work'] = false;
                         $helper->deleteSessionCooKs();
                         header('Location: /');
-                        exit();
                     } else {
                         $helper->flash($result[1]);
                         header('Location: /?mode=change_password');
                     }
+                    exit();
                 }
-            } else header('Location: /');
+            }
+            header('Location: /');
             exit();
         //Форма изменения пароля
         case 'change_password':
