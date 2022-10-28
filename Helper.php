@@ -24,8 +24,6 @@ class Helper
     //Проверка Email и пароля в БД users
     public function isExistsCredentials($email, $password, $onlyMail = false): array
     {
-        if(empty($email)) return [false, 'Не введён Email'];
-        if(empty($password)) return [false, 'Не введён пароль'];
         //Проверяем на SQL инъекцию
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return [false, 'Email имеет неверный формат'];
         $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".$email."'");
@@ -40,9 +38,7 @@ class Helper
     //Создание пользователя в БД и проверка вводимых параметров
     public function createUser($email, $password, $password2): array
     {
-        if(empty($email)) return [false, 'Не введён Email'];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return [false, 'Email имеет неверный формат'];
-        if(empty($password)) return [false, 'Не введён пароль'];
         if($password != $password2) return [false, 'Пароли не совпадают'];
         //Проверяем на существование email
         if ($this->isExistsCredentials($email, $password, true)[0]) return [false, 'Пользователь с таким Email существует'];
@@ -53,8 +49,6 @@ class Helper
     //Изменение пароля пользователя
     public function changePassword($email, $password_old, $password, $password2): array
     {
-        if(empty($password_old)) return [false, 'Не введён старый пароль'];
-        if(empty($password)) return [false, 'Не введён новый пароль'];
         if($password != $password2) return [false, 'Новые пароли не совпадают'];
         //Запрашиваем данные пользователя
         $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".$email."'");

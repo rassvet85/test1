@@ -34,7 +34,9 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
     switch ($_GET['mode']) {
         //Обработка входа
         case 'do_login':
-            if (!$_SESSION['work']) {
+            if (empty($_POST['email'])) $helper->flash('Не введён Email');
+            elseif (empty($_POST['password'])) $helper->flash('Не введён пароль');
+            elseif (!$_SESSION['work']) {
                 //Проверяем на существование данных в бд users
                 $result = $helper->isExistsCredentials($_POST['email'], $_POST['password']);
                 //Если данных нет - устанавливаем ошибку.
@@ -66,14 +68,19 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
         //Обработка регистрации
         case 'do_reg':
             if (!$_SESSION['work']) {
-                //Создаем пользователя в БД
-                $result = $helper->createUser($_POST['email'], $_POST['password'], $_POST['password_2']);
-                if ($result[0]) {
-                    $helper->flash('Пользователь ' . $_POST['email'] . ' успешно создан. Теперь Вы можете авторизоваться.', true);
-                    header('Location: /');
-                } else {
-                    $helper->flash($result[1]);
-                    header('Location: /?mode=reg');
+                if (empty($_POST['email'])) $helper->flash('Не введён Email');
+                elseif (empty($_POST['password'])) $helper->flash('Не введён пароль');
+                elseif (empty($_POST['password_2'])) $helper->flash('Не введён пароль подтверждения');
+                else {
+                    //Создаем пользователя в БД
+                    $result = $helper->createUser($_POST['email'], $_POST['password'], $_POST['password_2']);
+                    if ($result[0]) {
+                        $helper->flash('Пользователь ' . $_POST['email'] . ' успешно создан. Теперь Вы можете авторизоваться.', true);
+                        header('Location: /');
+                    } else {
+                        $helper->flash($result[1]);
+                        header('Location: /?mode=reg');
+                    }
                 }
             } else header('Location: /');
             exit();
@@ -88,18 +95,24 @@ if (isset($_SESSION['work']) && isset($_GET['mode'])) {
         //Обработка изменения пароля
         case 'do_change_password':
             if ($_SESSION['work']) {
-                //Изменяем пароль пользователя
-                $result = $helper->changePassword($_SESSION['email'],$_POST['password_old'],$_POST['password'],$_POST['password_2']);
-                if ($result[0]) {
-                    $helper->flash('Пароль успешно изменён. Пожалуйста авторизуйтесь повторно.', true);
-                    //Очищаем все параметры, связанные с авторизацией.
-                    $_SESSION['work'] = false;
-                    $helper->deleteSessionCooKs();
-                    header('Location: /');
-                    exit();
-                } else {
-                    $helper->flash($result[1]);
-                    header('Location: /?mode=change_password');
+                if (empty($_POST['email'])) $helper->flash('Не введён Email');
+                elseif (empty($_POST['password_old'])) $helper->flash('Не введён старый пароль');
+                elseif (empty($_POST['password'])) $helper->flash('Не введён новый пароль');
+                elseif (empty($_POST['password_2'])) $helper->flash('Не введён пароль подтверждения');
+                else {
+                    //Изменяем пароль пользователя
+                    $result = $helper->changePassword($_SESSION['email'], $_POST['password_old'], $_POST['password'], $_POST['password_2']);
+                    if ($result[0]) {
+                        $helper->flash('Пароль успешно изменён. Пожалуйста авторизуйтесь повторно.', true);
+                        //Очищаем все параметры, связанные с авторизацией.
+                        $_SESSION['work'] = false;
+                        $helper->deleteSessionCooKs();
+                        header('Location: /');
+                        exit();
+                    } else {
+                        $helper->flash($result[1]);
+                        header('Location: /?mode=change_password');
+                    }
                 }
             } else header('Location: /');
             exit();
