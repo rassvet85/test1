@@ -26,7 +26,7 @@ class Helper
     {
         //Проверяем на SQL инъекцию
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return [false, 'Email имеет неверный формат'];
-        $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".$email."'");
+        $result = pg_query($this->dbconn, "SELECT * FROM users WHERE email = '".mb_strtolower($email, 'UTF-8')."'");
         if (!$result || pg_num_rows($result) == 0) return [false, 'Пользователь с такими Email не зарегистрирован'];
         if ($onlyMail) return [true];
         $row = pg_fetch_assoc($result);
@@ -42,7 +42,7 @@ class Helper
         if($password != $password2) return [false, 'Пароли не совпадают'];
         //Проверяем на существование email
         if ($this->isExistsCredentials($email, $password, true)[0]) return [false, 'Пользователь с таким Email существует'];
-        $result = pg_query($this->dbconn, "INSERT INTO users (email, password) VALUES ('".$email."', '".password_hash($password,PASSWORD_DEFAULT)."')");
+        $result = pg_query($this->dbconn, "INSERT INTO users (email, password) VALUES ('".mb_strtolower($email, 'UTF-8')."', '".password_hash($password,PASSWORD_DEFAULT)."')");
         if (!$result) return [false, 'Ошибка создания пользователя в БД'];
         return [true];
     }
